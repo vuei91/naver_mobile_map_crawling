@@ -64,8 +64,8 @@ while i < len(search_list):
         'latitude': latitude,
         'doctors': doctors,
         'address': address,
+        'webpage': webpage,
         'time_data': time_data,
-        'webpage': webpage
     }
     print(data)
     datas.append(data)
