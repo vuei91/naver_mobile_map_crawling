@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-url = "https://m.map.naver.com/search2/search.naver?query=%EA%B3%A0%EC%96%91%EC%8B%9C%20%EC%9A%94%EC%96%91%EB%B3%91%EC%9B%90&sm=hty&style=v5"
+url = "https://m.map.naver.com/search2/search.naver?query=%EA%B3%A0%EC%96%91%EC%8B%9C%20%EC%9A%94%EC%96%91%EB%B3%91%EC%9B%90&sm=hty&style=v5#/list"
 driver.get(url)
 driver.maximize_window()
 driver.implicitly_wait(10)
@@ -49,23 +49,34 @@ while i < len(search_list):
             obj = {}
             span = timex.find_element(By.CSS_SELECTOR, '.y6tNq > .A_cdD > .i8cJw')
             div = timex.find_element(By.CSS_SELECTOR, '.y6tNq > .A_cdD > .H3ua4')
-            obj['week_name'] = span.text
-            obj['week_time'] = div.text
+            obj['weekName'] = span.text
+            obj['weekTime'] = div.text
             time_data.append(obj)
+    except Exception as e:
+        print(e)
+
+    subject = None
+    try:
+        s = []
+        subjects = driver.find_elements(By.CLASS_NAME, 'zxtJF')
+        for subject in subjects:
+            s.append(subject.text)
+        subject = '|||'.join(s)
     except Exception as e:
         print(e)
 
     data = {
         'id': i,
         'title': title,
-        'flag_title': flag_title,
+        'category': flag_title,
         'tel': tel,
         'longitude': longitude,
         'latitude': latitude,
         'doctors': doctors,
         'address': address,
         'webpage': webpage,
-        'time_data': time_data,
+        'subject': subject,
+        'clinicHoursList': time_data,
     }
     print(data)
     datas.append(data)
@@ -75,7 +86,7 @@ while i < len(search_list):
     search_list = driver.find_elements(By.CSS_SELECTOR, '._item._lazyImgContainer')
     driver.implicitly_wait(10)
 
-f2 = open('data.json', 'w', encoding='utf-8')
+f2 = open('nursing_home_center.json', 'w', encoding='utf-8')
 json.dump(datas, f2, ensure_ascii=False)
 f2.close()
 

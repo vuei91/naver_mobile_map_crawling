@@ -1,7 +1,7 @@
 import json
 import re
 
-with open('data.json', 'r') as f:
+with open('nursing_home_center.json', 'r') as f:
     data: list = json.load(f)
 
 pattern1 = re.compile(r'고양시')
@@ -23,8 +23,8 @@ def func(param):
 
 
 datas = list(
-    filter(lambda item: re.search(pattern1, item['address']) and re.search(pattern2, item['flag_title']), data))
+    filter(lambda item: re.search(pattern1, item['address']) and re.search(pattern2, item['category']), data))
 datas = list(map(func, datas))
 
-with open('filter.json', 'w') as f:
+with open('filter2.json', 'w') as f:
     json.dump(datas, f, ensure_ascii=False)
