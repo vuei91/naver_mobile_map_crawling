@@ -26,5 +26,5 @@ datas = list(
     filter(lambda item: re.search(pattern1, item['address']) and re.search(pattern2, item['category']), data))
 datas = list(map(func, datas))
 
-with open('filter2.json', 'w') as f:
+with open('hospitals.json', 'w') as f:
     json.dump(datas, f, ensure_ascii=False)

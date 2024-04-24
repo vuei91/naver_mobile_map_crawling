@@ -2,7 +2,7 @@ import json
 
 import requests
 
-with open("filter2.json", 'r') as f:
+with open("hospitals.json", 'r') as f:
     filters = json.load(f)
 
 for filter in filters:
