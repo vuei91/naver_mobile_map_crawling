@@ -1,5 +1,6 @@
 import json
 import time
+import re
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -14,17 +15,17 @@ driver.implicitly_wait(10)
 search_list = driver.find_elements(By.CSS_SELECTOR, '._item._lazyImgContainer')
 datas = []
 i = 0
-while i < len(search_list):
+while i < 30:
     driver.execute_script(f"window.scrollTo(0, {i * 100});")
-    title = search_list[i].get_attribute('data-title')
+    name = search_list[i].get_attribute('data-title')
     tel = search_list[i].get_attribute('data-tel')
     longitude = search_list[i].get_attribute('data-longitude')
     latitude = search_list[i].get_attribute('data-latitude')
     sid = search_list[i].get_attribute('data-sid')
     driver.get(f'https://m.place.naver.com/place/{sid}/home')
-    driver.implicitly_wait(10)
+    time.sleep(1)
     address = driver.find_element(By.CLASS_NAME, 'LDgIH').text
-    flag_title = driver.find_element(By.CLASS_NAME, 'DJJvD').text
+    category = driver.find_element(By.CLASS_NAME, 'DJJvD').text
     webpage = None
     try:
         webpage = driver.find_element(By.CSS_SELECTOR, '.CHmqa').text
@@ -50,7 +51,15 @@ while i < len(search_list):
             span = timex.find_element(By.CSS_SELECTOR, '.y6tNq > .A_cdD > .i8cJw')
             div = timex.find_element(By.CSS_SELECTOR, '.y6tNq > .A_cdD > .H3ua4')
             obj['weekName'] = span.text
-            obj['weekTime'] = div.text
+            div_text_list = div.text.split('\n')
+            for div_text in div_text_list:
+                if re.search(r'휴게시간', div_text):
+                    obj['breakTime'] = div_text.split(' 휴게시간')[0]
+                    continue
+                if re.search(r'접수마감', div_text):
+                    obj['deadlineTime'] = div_text.split(' 접수마감')[0]
+                    continue
+                obj['weekTime'] = div_text
             time_data.append(obj)
     except Exception as e:
         print(e)
@@ -65,10 +74,27 @@ while i < len(search_list):
     except Exception as e:
         print(e)
 
+    time.sleep(5)
+    convenience = None
+    try:
+        driver.get(f'https://m.place.naver.com/place/{sid}/information')
+        time.sleep(3)
+        elems = driver.find_elements(By.CSS_SELECTOR, '.owG4q')
+        convenience = "|||".join(map(lambda x: x.text, elems))
+    except Exception as e:
+        print(e)
+
+    parking = None
+    try:
+        elem = driver.find_element(By.CSS_SELECTOR, '.TZ6eS')
+        parking = elem.text
+    except Exception as e:
+        print(e)
+
     data = {
         'id': i,
-        'title': title,
-        'category': flag_title,
+        'name': name,
+        'category': category,
         'tel': tel,
         'longitude': longitude,
         'latitude': latitude,
@@ -77,16 +103,18 @@ while i < len(search_list):
         'webpage': webpage,
         'subject': subject,
         'clinicHoursList': time_data,
+        'convenience': convenience,
+        'parking': parking
     }
     print(data)
     datas.append(data)
-    driver.back()
+    driver.get(url)
     time.sleep(5)
     i = i + 1
     search_list = driver.find_elements(By.CSS_SELECTOR, '._item._lazyImgContainer')
     driver.implicitly_wait(10)
 
-f2 = open('nursing_home_center.json', 'w', encoding='utf-8')
+f2 = open('test.json', 'w', encoding='utf-8')
 json.dump(datas, f2, ensure_ascii=False)
 f2.close()
 
