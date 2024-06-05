@@ -22,7 +22,7 @@ from my_info import *
 ENC_KEY = ENC_KEY_naver
 DEC_KEY = DEC_KEY_naver
 limit = 9000
-offset = 0
+offset = 63000
 # sql = f'select 장기요양기관코드 as longTermAdminSym, 기관유형코드 as adminPttnCd from 장기요양기관_인원현황 where 장기요양기관코드 not in (select a.장기요양기관코드 from 장기요양기관_일반현황 a)'
 
 
