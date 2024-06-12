@@ -15,7 +15,7 @@ driver.implicitly_wait(10)
 search_list = driver.find_elements(By.CSS_SELECTOR, '._item._lazyImgContainer')
 datas = []
 i = 0
-while i < 30:
+while i < 10:
     driver.execute_script(f"window.scrollTo(0, {i * 100});")
     name = search_list[i].get_attribute('data-title')
     tel = search_list[i].get_attribute('data-tel')
@@ -25,7 +25,7 @@ while i < 30:
     driver.get(f'https://m.place.naver.com/place/{sid}/home')
     time.sleep(1)
     address = driver.find_element(By.CLASS_NAME, 'LDgIH').text
-    category = driver.find_element(By.CLASS_NAME, 'DJJvD').text
+    category = driver.find_element(By.CLASS_NAME, 'lnJFt').text
     webpage = None
     try:
         webpage = driver.find_element(By.CSS_SELECTOR, '.CHmqa').text
@@ -114,7 +114,7 @@ while i < 30:
     search_list = driver.find_elements(By.CSS_SELECTOR, '._item._lazyImgContainer')
     driver.implicitly_wait(10)
 
-f2 = open('test.json', 'w', encoding='utf-8')
+f2 = open('crawling.json', 'w', encoding='utf-8')
 json.dump(datas, f2, ensure_ascii=False)
 f2.close()
 
